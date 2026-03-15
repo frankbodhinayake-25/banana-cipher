@@ -40,18 +40,18 @@ export default function Login() {
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 mb-4 text-black"
+          className="w-full p-2 mb-4 text-white"
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 mb-4 text-black"
+          className="w-full p-2 mb-4 text-white"
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="w-full bg-yellow-400 text-black p-2">
+        <button className="w-full bg-yellow-400 text-white p-2">
           Login
         </button>
 
