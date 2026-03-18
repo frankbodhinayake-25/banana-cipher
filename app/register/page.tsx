@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Register() {
   const router = useRouter();
@@ -51,6 +52,12 @@ export default function Register() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button className="w-full bg-yellow-400 text-white p-2">Register</button>
+        <p className="mt-4 text-center text-sm text-gray-300">
+          Already have an account?{" "}
+          <Link href="/login" className="text-yellow-400 underline">
+            Login
+          </Link>
+        </p>
       </form>
     </div>
   );
