@@ -1,10 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar"; // import your Navbar component
+import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check login status on mount
+  useEffect(() => {
+    // Example: check if user token exists in localStorage
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleStartGame = () => {
+    if (isLoggedIn) {
+      router.push("/game");
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white">
@@ -27,7 +44,7 @@ export default function Home() {
         <div className="flex flex-col gap-4 w-64">
 
           <button
-            onClick={() => router.push("/game")}
+            onClick={handleStartGame}
             className="bg-yellow-400 text-black py-3 rounded font-bold hover:bg-yellow-300 transition"
           >
             ▶ Start Game
