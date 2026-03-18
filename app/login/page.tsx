@@ -31,7 +31,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex items-center justify-center">
       <form onSubmit={handleLogin} className="bg-gray-900 p-8 rounded w-96">
         <h2 className="text-2xl mb-6 text-yellow-400">Login</h2>
         <input
