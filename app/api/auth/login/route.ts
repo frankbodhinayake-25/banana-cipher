@@ -6,38 +6,31 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-
     await connectDB();
 
     const user = await User.findOne({ email });
-
     if (!user) {
-      return NextResponse.json(
-        { message: "User does not exist" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "User does not exist" }, { status: 404 });
     }
 
-    const validPassword = await bcrypt.compare(
-      password,
-      user.password
-    );
-
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      return NextResponse.json(
-        { message: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 
     return NextResponse.json({
       success: true,
-      user,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        totalScore: user.totalScore,
+        maxStreak: user.maxStreak,
+        highestScore: user.highestScore || 0, // Added to return
+      },
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Login failed" },
-      { status: 500 }
-    );
+    console.error("Login error:", error);
+    return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 }
