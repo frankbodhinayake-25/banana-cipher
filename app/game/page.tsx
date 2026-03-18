@@ -23,9 +23,9 @@ export default function GamePage() {
   const [gameOver, setGameOver] = useState(false);
 
   const getDuration = () => {
-    if (difficulty === "easy") return 30;
-    if (difficulty === "medium") return 20;
-    return 10;
+    if (difficulty === "easy") return 20;
+    if (difficulty === "medium") return 12;
+    return 7;
   };
 
   const fetchPuzzle = async () => {
@@ -54,7 +54,6 @@ export default function GamePage() {
 
       fetchPuzzle();
     } else {
-      // ❌ GAME OVER
       setGameOver(true);
     }
   };
@@ -73,7 +72,7 @@ export default function GamePage() {
   // 🎮 Difficulty Selection Screen
   if (!difficulty) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col items-center justify-center">
 
         <h1 className="text-4xl text-yellow-400 font-bold mb-8">
           🍌 BananaCipher
@@ -109,7 +108,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white">
 
       <Navbar />
 
