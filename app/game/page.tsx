@@ -8,7 +8,6 @@ import Timer from "@/components/Timer";
 import ScoreBoard from "@/components/ScoreBoard";
 import AnswerInput from "@/components/AnswerInput";
 import { getPuzzle } from "@/lib/bananaAPI";
-import { calculateScore } from "@/utils/scoringSystem";
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -18,6 +17,7 @@ export default function GamePage() {
   const [startTime, setStartTime] = useState<number>(Date.now());
 
   const [score, setScore] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [lastCorrectAnswer, setLastCorrectAnswer] = useState<number | null>(null);
 
@@ -38,10 +38,17 @@ export default function GamePage() {
   };
 
   useEffect(() => {
+    const savedTotal = localStorage.getItem("totalScore");
+    if (savedTotal) {
+      setTotalScore(parseInt(savedTotal));
+    }
+  }, []);
+
+  useEffect(() => {
     if (difficulty) fetchPuzzle();
   }, [difficulty]);
 
-  const saveScoreToDB = async (finalScore: number, finalStreak: number) => {
+  const saveScoreToDB = async (scoreToAdd: number, finalStreak: number) => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
 
@@ -49,7 +56,7 @@ export default function GamePage() {
       const res = await fetch("/api/game/saveScore", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, score: finalScore, streak: finalStreak }),
+        body: JSON.stringify({ userId, score: scoreToAdd, streak: finalStreak }),
       });
 
       const data = await res.json();
@@ -63,30 +70,36 @@ export default function GamePage() {
     if (gameOver) return;
 
     if (answer === solution) {
-      const timeLeft = Math.max(
-        getDuration() - Math.floor((Date.now() - startTime) / 1000),
-        0
-      );
+      const gained = 10;
 
-      const gained = calculateScore(timeLeft, streak + 1);
       const newScore = score + gained;
+      const newTotalScore = totalScore + gained;
       const newStreak = streak + 1;
 
       setScore(newScore);
+      setTotalScore(newTotalScore);
       setStreak(newStreak);
       setLastCorrectAnswer(solution);
 
+      localStorage.setItem("totalScore", newTotalScore.toString());
+
       fetchPuzzle();
-      saveScoreToDB(newScore, newStreak);
+
+      // ✅ FIX: send only gained score
+      saveScoreToDB(gained, newStreak);
     } else {
       setGameOver(true);
-      saveScoreToDB(score, streak);
+
+      // ✅ FIX: do NOT resend full score
+      saveScoreToDB(0, streak);
     }
   };
 
   const handleTimeUp = () => {
     setGameOver(true);
-    saveScoreToDB(score, streak);
+
+    // ✅ FIX: do NOT resend full score
+    saveScoreToDB(0, streak);
   };
 
   const restartGame = () => {
@@ -97,7 +110,6 @@ export default function GamePage() {
     fetchPuzzle();
   };
 
-  // Difficulty selection screen
   if (!difficulty) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col">
@@ -135,13 +147,11 @@ export default function GamePage() {
     );
   }
 
-  // Game screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col">
       <Navbar />
 
       <div className="flex flex-col items-center justify-center mt-10 gap-4 pb-10 flex-1">
-        {/* Added pb-10 for bottom padding */}
         <ScoreBoard score={score} streak={streak} />
         <Timer startTime={startTime} duration={getDuration()} onTimeUp={handleTimeUp} />
         {puzzle && <PuzzleImage image={puzzle} />}
@@ -168,7 +178,6 @@ export default function GamePage() {
         )}
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
