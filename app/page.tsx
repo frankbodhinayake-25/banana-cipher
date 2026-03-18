@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"; 
 
 export default function Home() {
   const router = useRouter();
@@ -10,7 +11,6 @@ export default function Home() {
 
   // Check login status on mount
   useEffect(() => {
-    // Example: check if user token exists in localStorage
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
@@ -23,14 +23,29 @@ export default function Home() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white">
+  const handleLogout = () => {
+    // Clear user-related localStorage keys
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
 
+    // Reset login state
+    setIsLoggedIn(false);
+
+    // Redirect to login page or home page
+    router.push("/login");
+
+    // Optional: trigger a page reload to update Navbar immediately
+    window.location.reload();
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col">
       {/* Navbar at the top */}
       <Navbar />
 
       {/* Dashboard Content */}
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)]">
+      <div className="flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-64px)]">
         {/* Title */}
         <h1 className="text-5xl font-bold text-yellow-400 mb-4">
           🍌 BananaCipher
@@ -42,7 +57,6 @@ export default function Home() {
 
         {/* Menu Buttons */}
         <div className="flex flex-col gap-4 w-64">
-
           <button
             onClick={handleStartGame}
             className="bg-yellow-400 text-black py-3 rounded font-bold hover:bg-yellow-300 transition"
@@ -65,19 +79,16 @@ export default function Home() {
           </button>
 
           <button
-            onClick={() => router.push("/login")}
+            onClick={handleLogout}
             className="bg-red-500 py-3 rounded font-bold hover:bg-red-400 transition"
           >
             🚪 Logout
           </button>
-
         </div>
-
-        {/* Footer */}
-        <p className="mt-10 text-xs text-gray-500">
-          © 2026 BananaCipher
-        </p>
       </div>
+
+      {/* Footer */}
+      <Footer /> 
     </div>
   );
 }

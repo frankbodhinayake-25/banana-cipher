@@ -22,8 +22,8 @@ export default function Login() {
     const data = await res.json();
 
     if (res.ok && data.user) {
-      // Store userId in localStorage for game score saving
       localStorage.setItem("userId", data.user._id);
+      localStorage.setItem("username", data.user.username);
       alert("Login successful!");
       router.push("/game");
     } else {
@@ -34,7 +34,12 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex items-center justify-center">
       <form onSubmit={handleLogin} className="bg-gray-900 p-8 rounded w-96">
-        <h2 className="text-2xl mb-6 text-yellow-400">Login</h2>
+        
+        {/* ✅ Centered heading */}
+        <h2 className="text-2xl mb-6 text-yellow-400 text-center">
+          Login
+        </h2>
+
         <input
           type="email"
           placeholder="Email"
