@@ -1,4 +1,4 @@
-"use client";
+"use client"; 
 
 import { useState, useRef, useEffect } from "react";
 
@@ -32,20 +32,19 @@ export default function AnswerInput({
     >
       <input
         ref={inputRef}
-        type="text"   // ✅ CHANGED (IMPORTANT)
-        inputMode="numeric"  // ✅ shows numeric keyboard on mobile
+        type="text"   // ✅ allows numeric typing
+        inputMode="numeric"  // ✅ numeric keyboard on mobile
         placeholder="Type your answer..."
         value={answer}
         onChange={(e) => {
-          // ✅ allow only numbers
           const value = e.target.value;
           if (/^\d*$/.test(value)) {
             setAnswer(value);
           }
         }}
-        className="w-40 px-3 py-2 rounded bg-black text-white border border-yellow-300 
+        className="w-60 px-4 py-2 rounded bg-black text-white border border-yellow-300 
                    focus:outline-none focus:ring-2 focus:ring-yellow-400 
-                   text-center text-lg font-bold"
+                   text-center text-lg font-bold" // ✅ increased width
       />
 
       <button

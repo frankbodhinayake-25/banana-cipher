@@ -18,14 +18,15 @@ export default function GamePage() {
 
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [lastCorrectAnswer, setLastCorrectAnswer] = useState<number | null>(null);
 
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [gameOver, setGameOver] = useState(false);
 
   const getDuration = () => {
-    if (difficulty === "easy") return 20;
-    if (difficulty === "medium") return 12;
-    return 7;
+    if (difficulty === "easy") return 30;
+    if (difficulty === "medium") return 20;
+    return 10;
   };
 
   const fetchPuzzle = async () => {
@@ -72,6 +73,7 @@ export default function GamePage() {
 
       setScore(newScore);
       setStreak(newStreak);
+      setLastCorrectAnswer(solution);
 
       fetchPuzzle();
       saveScoreToDB(newScore, newStreak);
@@ -89,6 +91,7 @@ export default function GamePage() {
   const restartGame = () => {
     setScore(0);
     setStreak(0);
+    setLastCorrectAnswer(null);
     setGameOver(false);
     fetchPuzzle();
   };
@@ -97,9 +100,8 @@ export default function GamePage() {
   if (!difficulty) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col">
-        <Navbar /> {/* Navbar fixed at top */}
+        <Navbar />
 
-        {/* Centered difficulty box */}
         <div className="flex-1 flex items-center justify-center">
           <div className="bg-gray-900/80 backdrop-blur-lg p-10 rounded-xl text-center flex flex-col items-center gap-6">
             <h1 className="text-4xl text-yellow-400 font-bold mb-4">
@@ -137,12 +139,20 @@ export default function GamePage() {
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white">
       <Navbar />
 
-      <div className="flex flex-col items-center justify-center mt-10">
+      <div className="flex flex-col items-center justify-center mt-10 gap-4 pb-10">
+        {/* Added pb-10 for bottom padding */}
         <ScoreBoard score={score} streak={streak} />
         <Timer startTime={startTime} duration={getDuration()} onTimeUp={handleTimeUp} />
         {puzzle && <PuzzleImage image={puzzle} />}
         {!gameOver ? (
-          <AnswerInput onSubmit={handleAnswer} />
+          <>
+            <AnswerInput onSubmit={handleAnswer} />
+            {lastCorrectAnswer !== null && (
+              <p className="text-green-400 font-bold mt-2">
+                ✅ Correct Answer: {lastCorrectAnswer}
+              </p>
+            )}
+          </>
         ) : (
           <div className="text-center mt-6">
             <h2 className="text-red-500 text-2xl mb-4">💀 Game Over</h2>
