@@ -39,7 +39,6 @@ export default function GamePage() {
     if (difficulty) fetchPuzzle();
   }, [difficulty]);
 
-  // ✅ Save score, streak, and highestScore to DB
   const saveScoreToDB = async (finalScore: number, finalStreak: number) => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
@@ -53,8 +52,6 @@ export default function GamePage() {
 
       const data = await res.json();
       if (!res.ok) console.error("Save score failed:", data.message);
-      // You can optionally log highestScore returned from server:
-      // console.log("Current highestScore:", data.highestScore);
     } catch (error) {
       console.error("Failed to save score:", error);
     }
@@ -77,12 +74,9 @@ export default function GamePage() {
       setStreak(newStreak);
 
       fetchPuzzle();
-
-      // Save progress for maxStreak, totalScore, and highestScore
       saveScoreToDB(newScore, newStreak);
     } else {
       setGameOver(true);
-      // Save final score, streak, and update highestScore
       saveScoreToDB(score, streak);
     }
   };
@@ -99,37 +93,46 @@ export default function GamePage() {
     fetchPuzzle();
   };
 
+  // Difficulty selection screen
   if (!difficulty) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col items-center justify-center">
-        <h1 className="text-4xl text-yellow-400 font-bold mb-8">
-          🍌 BananaCipher
-        </h1>
-        <p className="mb-6">Select Difficulty</p>
-        <div className="flex gap-4">
-          <button
-            onClick={() => setDifficulty("easy")}
-            className="bg-green-500 px-6 py-2 rounded font-bold"
-          >
-            Easy
-          </button>
-          <button
-            onClick={() => setDifficulty("medium")}
-            className="bg-yellow-500 px-6 py-2 rounded font-bold"
-          >
-            Medium
-          </button>
-          <button
-            onClick={() => setDifficulty("hard")}
-            className="bg-red-500 px-6 py-2 rounded font-bold"
-          >
-            Hard
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col">
+        <Navbar /> {/* Navbar fixed at top */}
+
+        {/* Centered difficulty box */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="bg-gray-900/80 backdrop-blur-lg p-10 rounded-xl text-center flex flex-col items-center gap-6">
+            <h1 className="text-4xl text-yellow-400 font-bold mb-4">
+              🍌 BananaCipher
+            </h1>
+            <p className="text-white text-lg mb-4">Select Difficulty</p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setDifficulty("easy")}
+                className="bg-green-500 px-6 py-2 rounded font-bold hover:scale-105 transition-transform"
+              >
+                Easy
+              </button>
+              <button
+                onClick={() => setDifficulty("medium")}
+                className="bg-yellow-500 px-6 py-2 rounded font-bold hover:scale-105 transition-transform"
+              >
+                Medium
+              </button>
+              <button
+                onClick={() => setDifficulty("hard")}
+                className="bg-red-500 px-6 py-2 rounded font-bold hover:scale-105 transition-transform"
+              >
+                Hard
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Game screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white">
       <Navbar />

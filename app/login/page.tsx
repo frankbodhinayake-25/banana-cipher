@@ -22,8 +22,9 @@ export default function Login() {
     const data = await res.json();
 
     if (res.ok && data.user) {
-      // Store userId in localStorage for game score saving
+      // Store userId and username in localStorage for Navbar and game
       localStorage.setItem("userId", data.user._id);
+      localStorage.setItem("username", data.user.username); // Added line to update Navbar
       alert("Login successful!");
       router.push("/game");
     } else {
