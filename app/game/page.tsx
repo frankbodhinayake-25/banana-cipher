@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"; 
 import PuzzleImage from "@/components/PuzzleImage";
 import Timer from "@/components/Timer";
 import ScoreBoard from "@/components/ScoreBoard";
@@ -136,10 +137,10 @@ export default function GamePage() {
 
   // Game screen
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#000000] text-white flex flex-col">
       <Navbar />
 
-      <div className="flex flex-col items-center justify-center mt-10 gap-4 pb-10">
+      <div className="flex flex-col items-center justify-center mt-10 gap-4 pb-10 flex-1">
         {/* Added pb-10 for bottom padding */}
         <ScoreBoard score={score} streak={streak} />
         <Timer startTime={startTime} duration={getDuration()} onTimeUp={handleTimeUp} />
@@ -166,6 +167,9 @@ export default function GamePage() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
