@@ -10,7 +10,6 @@ export default function Home() {
 
   // Check login status on mount
   useEffect(() => {
-    // Example: check if user token exists in localStorage
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
@@ -21,6 +20,22 @@ export default function Home() {
     } else {
       router.push("/login");
     }
+  };
+
+  const handleLogout = () => {
+    // Clear user-related localStorage keys
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+
+    // Reset login state
+    setIsLoggedIn(false);
+
+    // Redirect to login page or home page
+    router.push("/login");
+
+    // Optional: trigger a page reload to update Navbar immediately
+    window.location.reload();
   };
 
   return (
@@ -65,7 +80,7 @@ export default function Home() {
           </button>
 
           <button
-            onClick={() => router.push("/login")}
+            onClick={handleLogout}
             className="bg-red-500 py-3 rounded font-bold hover:bg-red-400 transition"
           >
             🚪 Logout
