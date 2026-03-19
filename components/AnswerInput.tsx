@@ -14,6 +14,8 @@ export default function AnswerInput({
     inputRef.current?.focus();
   }, []);
 
+
+  //event handle submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -27,6 +29,7 @@ export default function AnswerInput({
 
   return (
     <form
+    //calling handle submit event
       onSubmit={handleSubmit}
       className="flex items-center gap-3 bg-gray-900 p-3 rounded-lg border border-yellow-400"
     >
