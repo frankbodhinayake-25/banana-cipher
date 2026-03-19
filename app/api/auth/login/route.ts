@@ -2,6 +2,8 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { createToken } from "@/lib/auth";
+
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +20,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 
-    return NextResponse.json({
+    const token = createToken(user);
+
+    const response = NextResponse.json({
       success: true,
       user: {
         _id: user._id,
@@ -26,9 +30,21 @@ export async function POST(req: Request) {
         email: user.email,
         totalScore: user.totalScore,
         maxStreak: user.maxStreak,
-        highestScore: user.highestScore || 0, // Added to return
+        highestScore: user.highestScore || 0,
       },
     });
+
+    // cookie setup
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+
+    return response;
+
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json({ error: "Login failed" }, { status: 500 });

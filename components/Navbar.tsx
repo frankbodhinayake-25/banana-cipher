@@ -1,36 +1,48 @@
-"use client"; 
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 
-// Dicebear colorful avatar generator
+// Dicebear avatar
 const getDicebearAvatar = (username: string) =>
   `https://api.dicebear.com/6.x/bottts/svg?seed=${encodeURIComponent(
     username
   )}&backgroundColor=transparent`;
 
 export default function Navbar() {
-  // Keep all your links/layouts intact
-  const [user, setUser] = useState<{ username: string; avatar: string }>({
-    username: "User", // default user
-    avatar: getDicebearAvatar("User"), // default avatar
-  });
-
+  const [user, setUser] = useState<{ username: string; avatar: string } | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check for logged-in user in localStorage
-    const storedUserId = localStorage.getItem("userId");
-    const storedUsername = localStorage.getItem("username");
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+        });
 
-    if (storedUserId && storedUsername) {
-      // Update state with logged-in user
-      setUser({
-        username: storedUsername,
-        avatar: getDicebearAvatar(storedUsername),
-      });
-    }
+        if (!res.ok) {
+          setUser(null);
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.user) {
+          setUser({
+            username: data.user.username,
+            avatar: getDicebearAvatar(data.user.username),
+          });
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      }
+    };
+
+    fetchUser();
 
     // Close dropdown if clicked outside
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,22 +50,20 @@ export default function Navbar() {
         setDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    // Clear user info
-    localStorage.removeItem("userId");
-    localStorage.removeItem("username");
-    localStorage.removeItem("token");
-
-    // Reset state to default
-    setUser({
-      username: "User",
-      avatar: getDicebearAvatar("User"),
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
     });
+
+    setUser(null);
     setDropdownOpen(false);
+    window.location.href = "/login";
   };
 
   return (
@@ -82,9 +92,9 @@ export default function Navbar() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
           >
-            {/* Profile Avatar */}
+            {/* Avatar */}
             <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
-              {user.avatar ? (
+              {user ? (
                 <img
                   src={user.avatar}
                   alt="Avatar"
@@ -92,27 +102,31 @@ export default function Navbar() {
                 />
               ) : (
                 <span className="text-sm text-purple-900 font-bold flex items-center justify-center h-full">
-                  {user.username[0].toUpperCase()}
+                  G
                 </span>
               )}
             </div>
-            <span className="hidden sm:inline font-medium">{user.username}</span>
+
+            {/* Username */}
+            <span className="hidden sm:inline font-medium">
+              {user ? user.username : "Guest"}
+            </span>
           </div>
 
-          {/* Dropdown menu */}
+          {/* Dropdown */}
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-32 bg-gray-900 border border-yellow-400 rounded shadow-lg flex flex-col">
               <button
                 onClick={handleLogout}
                 className="text-white px-4 py-2 text-left hover:bg-red-500 transition rounded-t"
               >
-                 Logout
+                Logout
               </button>
               <Link
                 href="/profile"
                 className="text-white px-4 py-2 text-left hover:bg-gray-700 transition rounded-b"
               >
-                 Profile
+                Profile
               </Link>
             </div>
           )}
