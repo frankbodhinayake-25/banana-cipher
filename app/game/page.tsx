@@ -48,23 +48,41 @@ export default function GamePage() {
     if (difficulty) fetchPuzzle();
   }, [difficulty]);
 
+//   const saveScoreToDB = async (scoreToAdd: number, finalStreak: number) => {
+//     // const userId = localStorage.getItem("userId");
+//     // if (!userId) return;
+
+//     try {
+//       const res = await fetch("/api/game/saveScore", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         // body: JSON.stringify({ userId, score: scoreToAdd, streak: finalStreak }),
+//       });
+
+//       const data = await res.json();
+//       if (!res.ok) console.error("Save score failed:", data.message);
+//     } catch (error) {
+//       console.error("Failed to save score:", error);
+//     }
+//   };
+
+
+
   const saveScoreToDB = async (scoreToAdd: number, finalStreak: number) => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
-
     try {
-      const res = await fetch("/api/game/saveScore", {
+        const res = await fetch("/api/game/saveScore", {
         method: "POST",
+        credentials: "include", // the key
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, score: scoreToAdd, streak: finalStreak }),
-      });
+        body: JSON.stringify({ score: scoreToAdd, streak: finalStreak }),
+        });
 
-      const data = await res.json();
-      if (!res.ok) console.error("Save score failed:", data.message);
+        const data = await res.json();
+        if (!res.ok) console.error("Save score failed:", data.message);
     } catch (error) {
-      console.error("Failed to save score:", error);
+        console.error("Failed to save score:", error);
     }
-  };
+    };
 
   const handleAnswer = (answer: number) => {
     if (gameOver) return;

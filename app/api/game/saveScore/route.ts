@@ -1,18 +1,36 @@
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const { userId, score, streak } = await req.json();
+    // const { userId, score, streak } = await req.json();
+    const { score, streak } = await req.json();
 
-    if (!userId) {
-      return NextResponse.json({ message: "UserId is required" }, { status: 400 });
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+    return NextResponse.json({ message: "Not logged in" }, { status: 401 });
     }
+
+    let decoded: any;
+
+    try {
+    decoded = verifyToken(token);
+    } catch (err) {
+    return NextResponse.json({ message: "Invalid token" }, { status: 401 });
+    }
+
+    // if (!userId) {
+    //   return NextResponse.json({ message: "UserId is required" }, { status: 400 });
+    // }
 
     await connectDB();
 
-    const user = await User.findById(userId);
+    const user = await User.findById(decoded.id);
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
